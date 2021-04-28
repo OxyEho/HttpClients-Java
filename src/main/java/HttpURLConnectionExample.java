@@ -5,19 +5,20 @@ import java.nio.charset.StandardCharsets;
 
 public class HttpURLConnectionExample {
     public static void main(String[] args) throws IOException {
-//        makeGetRequests();
-        makePostRequests();
+        makeGetRequests();
+//        makePostRequests();
     }
 
     private static void makeGetRequests() throws IOException {
-        for (int i = 0; i < 5; i++) {
-            long startTime = System.currentTimeMillis();
-            URL myUrl = new URL("https://www.google.com/");
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 20; i++) {
+
+            URL myUrl = new URL("http://localhost/");
             HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
             connection.getResponseMessage();
             connection.disconnect();
-            System.out.println(System.currentTimeMillis() - startTime);
         }
+        System.out.println(System.currentTimeMillis() - startTime);
     }
 
     private static void makePostRequests() throws IOException {

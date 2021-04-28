@@ -14,13 +14,13 @@ import java.util.List;
 
 public class ApacheHttpClientExample {
     public static void main(String[] args) throws IOException {
-//        makeGetRequest();
-        makePostRequest();
+        makeGetRequest();
+//        makePostRequest();
     }
 
     public static void makeGetRequest() throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("https://postman-echo.com/post");
+        HttpGet httpget = new HttpGet("http://localhost/");
         for (int i = 0; i < 5; i++){
             long startTime = System.currentTimeMillis();
             CloseableHttpResponse httpResponse = httpclient.execute(httpget);
