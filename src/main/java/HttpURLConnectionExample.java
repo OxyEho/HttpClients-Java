@@ -3,29 +3,23 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-public class HttpURLConnectionExample {
-    public static void main(String[] args) throws IOException {
-        makeGetRequests();
-//        makePostRequests();
-    }
-
-    private static void makeGetRequests() throws IOException {
-        long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 20; i++) {
-
-            URL myUrl = new URL("http://localhost/");
+public class HttpURLConnectionExample implements IHttpClient{
+    public void makeGetRequest(int requestsCount, String url) throws IOException {
+        for (int i = 0; i < requestsCount; i++) {
+            URL myUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
-            connection.getResponseMessage();
+            if (connection.getResponseCode() != 200) {
+                throw new RuntimeException();
+            }
             connection.disconnect();
         }
-        System.out.println(System.currentTimeMillis() - startTime);
     }
 
-    private static void makePostRequests() throws IOException {
-        for (int i = 0; i < 5; i++) {
+    public void makePostRequest(int requestsCount, String url) throws IOException {
+        for (int i = 0; i < requestsCount; i++) {
             long startTime = System.currentTimeMillis();
             String urlParameters = "user=test&password=test";
-            URL myUrl = new URL("https://postman-echo.com/post");
+            URL myUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);

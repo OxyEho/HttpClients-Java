@@ -1,3 +1,6 @@
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -7,45 +10,50 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 
-public class HttpClientExample {
-    public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
-        makeGetRequest();
-//        makePostRequest();
-    }
-
-    public static void makeGetRequest() throws URISyntaxException, IOException, InterruptedException {
+public class HttpClientExample implements IHttpClient{
+    public void makeGetRequest(int requestsCount, String url) throws URISyntaxException, IOException, InterruptedException {
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
-                .followRedirects(HttpClient.Redirect.NORMAL)
+                .followRedirects(HttpClient.Redirect.NEVER)
                 .build();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost/"))
+                .uri(new URI(url))
+                .GET()
                 .build();
-        for (int i = 0; i < 5; i++) {
-            long startTime = System.nanoTime();
+        for (int i = 0; i < requestsCount; i++) {
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-            System.out.println(System.nanoTime() - startTime);
+            if (response.statusCode() != 200) {
+                throw new RuntimeException();
+            }
         }
     }
 
-    public static void makePostRequest() throws URISyntaxException, IOException, InterruptedException {
+    public void makePostRequest(int requestsCount, String url) throws URISyntaxException, IOException, InterruptedException {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user", "VALUE1");
+            jsonObject.put("pass", "VALUE2");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        long startTime = System.currentTimeMillis();
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
         HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString("user=test&password=test", StandardCharsets.UTF_8))
-                .uri(new URI("https://postman-echo.com/post"))
-                .header("Content-Type", "application/x-www-form-urlencoded")
-//                .header("Content-type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonObject.toString(), StandardCharsets.UTF_8))
+                .uri(new URI(url))
+                .header("Content-Type", "application/json")
                 .build();
-        for (int i = 0; i < 5; i++) {
-            long startTime = System.currentTimeMillis();
+
+        for (int i = 0; i < requestsCount; i++) {
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-            System.out.println(System.currentTimeMillis() - startTime);
-            System.out.println(response.body());
+            if (response.statusCode() != 200) {
+                throw new RuntimeException();
+            }
+//            System.out.println(response.body());
         }
     }
 }
