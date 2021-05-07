@@ -1,8 +1,8 @@
 import org.apache.commons.lang3.time.StopWatch;
-import org.asynchttpclient.AsyncCompletionHandler;
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.Dsl;
-import org.asynchttpclient.Response;
+import org.asynchttpclient.*;
+import org.asynchttpclient.util.HttpConstants;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,46 +10,69 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class AsyncHttpClientExample {
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        AsyncHttpClient c1 = Dsl.asyncHttpClient();
-        Future<Response> f1 = c1.prepareGet("http://localhost:8080/Server_war/hello").execute(new AsyncCompletionHandler<Response>() {
-
-            @Override
-            public Response onCompleted(Response response) throws IOException {
-                if (response.getStatusCode() != 200)
-                    throw new RuntimeException();
-                return response;
-            }
-
-            @Override
-            public void onThrowable(Throwable t) {
-            }
-        });
-        f1.get();
+    public static void makeGetRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {
+        AsyncHttpClient client = Dsl.asyncHttpClient();
+        Request request = new RequestBuilder(HttpConstants.Methods.GET)
+                .setUrl(url)
+                .build();
         ArrayList<Future<Response>> responses = new ArrayList<>();
-        StopWatch watch = new StopWatch();
-        watch.start();
-        for (int i = 0; i < 100; i++) {
-            AsyncHttpClient c = Dsl.asyncHttpClient();
-            Future<Response> f = c.prepareGet("http://localhost:8080/Server_war/hello").execute(new AsyncCompletionHandler<Response>() {
-
+        for (int i = 0; i < requestsCount; i++) {
+            Future<Response> f = client.executeRequest(request, new AsyncCompletionHandler<Response>() {
                 @Override
                 public Response onCompleted(Response response) throws IOException {
                     if (response.getStatusCode() != 200)
                         throw new RuntimeException();
                     return response;
                 }
-
-                @Override
-                public void onThrowable(Throwable t) {
-                }
             });
             responses.add(f);
         }
 
         for (Future<Response> resp: responses) {
-            System.out.println(resp.get().getResponseBody());
+            resp.get();
         }
+    }
+
+    public static void makePostRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {
+        JSONObject data = new JSONObject();
+        try {
+            data.put("user", "VALUE1");
+            data.put("pass", "VALUE2");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        AsyncHttpClient client = Dsl.asyncHttpClient();
+        Request request = new RequestBuilder(HttpConstants.Methods.POST)
+                .setUrl(url)
+                .addHeader("Content-Type", "application/json;charset=UTF-8")
+                .setBody(data.toString())
+                .build();
+        ArrayList<Future<Response>> responses = new ArrayList<>();
+        for (int i = 0; i < requestsCount; i++) {
+            Future<Response> f = client.executeRequest(request, new AsyncCompletionHandler<Response>() {
+                @Override
+                public Response onCompleted(Response response) throws IOException {
+                    if (response.getStatusCode() != 200)
+                        throw new RuntimeException();
+                    return response;
+                }
+            });
+//            f.get();
+            responses.add(f);
+        }
+        int c = 0;
+        for (Future<Response> resp: responses) {
+            System.out.println(resp.get().getResponseBody());
+            c++;
+        }
+        System.out.println(c);
+    }
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        StopWatch watch = new StopWatch();
+        makePostRequest(1, "https://postman-echo.com/post");
+        watch.start();
+        makePostRequest(1000, "https://postman-echo.com/post");
         watch.stop();
         System.out.println(watch.toString());
         System.exit(0);

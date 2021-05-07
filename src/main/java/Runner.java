@@ -8,17 +8,17 @@ public class Runner {
         IHttpClient apacheHttp = new ApacheHttpClientExample();
         IHttpClient okHttp = new OkHttpExample();
         IHttpClient httpClient11 = new HttpClientExample();
-        httpClient11.makeGetRequest(1, "http://localhost:8080/Server_war/hello");
-        okHttp.makeGetRequest(1, "http://localhost:8080/Server_war/hello");
+        httpClient11.makeGetRequest(1, "http://localhost:8080/Server_war/json");
+        okHttp.makeGetRequest(1, "http://localhost:8080/Server_war/json");
 //        apacheHttp.makePostRequest(1, "http://localhost:8080/Server_war/hello");
         StopWatch watch = new StopWatch();
         watch.start();
-        okHttp.makeGetRequest(100, "http://localhost:8080/Server_war/hello");
+        okHttp.makeGetRequest(1000, "http://localhost:8080/Server_war/json");
         watch.stop();
         System.out.println(watch.toString() + "  Ok http");
         watch.reset();
         watch.start();
-        httpClient11.makeGetRequest(100, "http://localhost:8080/Server_war/hello");
+        httpClient11.makeGetRequest(1000, "http://localhost:8080/Server_war/json");
         watch.stop();
         System.out.println(watch.toString() + " HttpClient");
 
