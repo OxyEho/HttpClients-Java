@@ -57,7 +57,6 @@ public class AsyncHttpClientExample {
                     return response;
                 }
             });
-//            f.get();
             responses.add(f);
         }
         int c = 0;
@@ -70,9 +69,9 @@ public class AsyncHttpClientExample {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         StopWatch watch = new StopWatch();
-        makePostRequest(1, "https://postman-echo.com/post");
+        makeGetRequest(1, "http://localhost:8080/Server_war/json");
         watch.start();
-        makePostRequest(1000, "https://postman-echo.com/post");
+        makeGetRequest(10000, "http://localhost:8080/Server_war/json");
         watch.stop();
         System.out.println(watch.toString());
         System.exit(0);
