@@ -26,10 +26,9 @@ public class OkHttpExample implements IHttpClient {
                 .url(url)
                 .get()
                 .build();
-
+        Call call = client.newCall(request);
         for (int i = 0; i < requestsCount; i++) {
-            Call call = client.newCall(request);
-            Response response = call.execute();
+            Response response = call.clone().execute();
             if (response.code() != 200) {
                 throw new RuntimeException();
             }
@@ -52,11 +51,6 @@ public class OkHttpExample implements IHttpClient {
             if (response.code() != 200) {
                 throw new RuntimeException();
             }
-//            BufferedReader buf = new BufferedReader(new InputStreamReader(response.body().byteStream()));
-//            String line;
-//            while ((line = buf.readLine()) != null) {
-//                System.out.println(line);
-//            }
             response.close();
         }
     }

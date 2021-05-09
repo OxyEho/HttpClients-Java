@@ -9,9 +9,21 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public class AsyncHttpClientExample {
-    public static void makeGetRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {
-        AsyncHttpClient client = Dsl.asyncHttpClient();
+public class AsyncHttpClientExample implements IHttpClient {
+    private final JSONObject data;
+
+    public AsyncHttpClientExample() {
+        data = new JSONObject();
+        try {
+            data.put("user", "VALUE1");
+            data.put("pass", "VALUE2");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void makeGetRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {
+        AsyncHttpClient client = Dsl.asyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setKeepAlive(true).build());
         Request request = new RequestBuilder(HttpConstants.Methods.GET)
                 .setUrl(url)
                 .build();
@@ -33,14 +45,7 @@ public class AsyncHttpClientExample {
         }
     }
 
-    public static void makePostRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {
-        JSONObject data = new JSONObject();
-        try {
-            data.put("user", "VALUE1");
-            data.put("pass", "VALUE2");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public void makePostRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {
         AsyncHttpClient client = Dsl.asyncHttpClient();
         Request request = new RequestBuilder(HttpConstants.Methods.POST)
                 .setUrl(url)
@@ -59,21 +64,8 @@ public class AsyncHttpClientExample {
             });
             responses.add(f);
         }
-        int c = 0;
         for (Future<Response> resp: responses) {
-            System.out.println(resp.get().getResponseBody());
-            c++;
+            resp.get();
         }
-        System.out.println(c);
-    }
-
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        StopWatch watch = new StopWatch();
-        makeGetRequest(1, "http://localhost:8080/Server_war/json");
-        watch.start();
-        makeGetRequest(10000, "http://localhost:8080/Server_war/json");
-        watch.stop();
-        System.out.println(watch.toString());
-        System.exit(0);
     }
 }

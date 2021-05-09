@@ -53,7 +53,6 @@ public class HttpClientExample implements IHttpClient{
             if (response.statusCode() != 200) {
                 throw new RuntimeException();
             }
-//            System.out.println(response.body());
         }
     }
 }

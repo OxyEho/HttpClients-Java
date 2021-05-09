@@ -30,14 +30,10 @@ public class ApacheHttpClientExample implements IHttpClient {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpGet httpget = new HttpGet(url);
         for (int i = 0; i < requestsCount; i++){
-
             CloseableHttpResponse httpResponse = httpclient.execute(httpget);
-
-            var a = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
-            String line;
-            while ((line = a.readLine()) != null) {
-                System.out.println(line);
-            }
+                if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                    throw new RuntimeException();
+                }
             httpResponse.close();
         }
         httpclient.close();
@@ -49,24 +45,12 @@ public class ApacheHttpClientExample implements IHttpClient {
                 ContentType.APPLICATION_JSON);
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
-//        List<NameValuePair> urlParameters = new ArrayList<>();
-//        urlParameters.add(new BasicNameValuePair("username", "test"));
-//        urlParameters.add(new BasicNameValuePair("password", "test"));
-
-//        httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
         httpPost.setEntity(requestEntity);
-
         for (int i = 0; i < requestsCount; i++){
-
             CloseableHttpResponse httpResponse = httpclient.execute(httpPost);
             if (httpResponse.getStatusLine().getStatusCode() != 200) {
                 throw new RuntimeException();
             }
-//            var a = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
-//            String line;
-//            while ((line = a.readLine()) != null) {
-//                System.out.println(line);
-//            }
             httpResponse.close();
         }
         httpclient.close();

@@ -6,31 +6,40 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.client.util.StringRequestContent;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class JettyHttpClientExample {
-    public static void main(String[] args) throws Exception {
-        makePostRequest(1);
-        StopWatch watch = new StopWatch();
-        watch.start();
-        makePostRequest(10000);
-        watch.stop();
-        System.out.println(watch.toString());
+public class JettyHttpClientExample implements IHttpClient {
+//    private static QueuedThreadPool threadPool = new QueuedThreadPool();
+    private static ExecutorService executorService = Executors.newFixedThreadPool(8 + 1);
+    private final JSONObject data;
+
+    public JettyHttpClientExample() {
+        data = new JSONObject();
+        try {
+            data.put("user", "VALUE1");
+            data.put("pass", "VALUE2");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void makeGetRequest(int requestsCount) throws Exception {
+    @Override
+    public void makeGetRequest(int requestsCount, String url) throws Exception {
         HttpClient client = new HttpClient();
+        client.setExecutor(executorService);
         client.start();
         final CountDownLatch latch = new CountDownLatch(requestsCount);
         for (int i = 0; i < requestsCount; i++)
-            client.newRequest("http://localhost:8080/Server_war/json")
+            client.newRequest(url)
                     .send(new BufferingResponseListener() {
-
                         @Override
                         public void onComplete(Result result) {
                             latch.countDown();
@@ -45,19 +54,14 @@ public class JettyHttpClientExample {
         client.stop();
     }
 
-    public static void makePostRequest(int requestsCount) throws Exception {
-        JSONObject data = new JSONObject();
-        try {
-            data.put("user", "VALUE1");
-            data.put("pass", "VALUE2");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public void makePostRequest(int requestsCount, String url) throws Exception {
         HttpClient client = new HttpClient();
+        client.setExecutor(executorService);
         client.start();
         final CountDownLatch latch = new CountDownLatch(requestsCount);
         for (int i = 0; i < requestsCount; i++)
-            client.POST("http://localhost:8080/Server_war/json")
+            client.POST(url)
                     .body(new StringRequestContent("application/json", data.toString()))
                     .send(new BufferingResponseListener() {
 
