@@ -32,6 +32,12 @@ public class OkHttpExample implements IHttpClient {
             if (response.code() != 200) {
                 throw new RuntimeException();
             }
+
+            BufferedReader buf = new BufferedReader(new InputStreamReader(response.body().byteStream()));
+            String line;
+            while ((line = buf.readLine()) != null) {
+                line = "";
+            }
             response.close();
         }
     }

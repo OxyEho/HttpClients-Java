@@ -31,9 +31,9 @@ public class ApacheHttpClientExample implements IHttpClient {
         HttpGet httpget = new HttpGet(url);
         for (int i = 0; i < requestsCount; i++){
             CloseableHttpResponse httpResponse = httpclient.execute(httpget);
-                if (httpResponse.getStatusLine().getStatusCode() != 200) {
-                    throw new RuntimeException();
-                }
+            if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                throw new RuntimeException();
+            }
             httpResponse.close();
         }
         httpclient.close();

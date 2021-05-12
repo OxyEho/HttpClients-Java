@@ -12,15 +12,18 @@ public class Runner {
         IHttpClient httpConnection = new HttpURLConnectionExample();
         IHttpClient asyncClient = new AsyncHttpClientExample();
         IHttpClient jettyClient = new JettyHttpClientExample();
-        testHttpClient(jettyClient, 10000, "http://localhost:8080/Server_war/json_test", "POST", 5);
+//        testHttpClient(okHttp, 100000, "http://localhost:8080/Server_war/json_test", "GET", 1);
+//        testHttpClient(httpClient11, 100000, "http://localhost:8080/Server_war/json_test", "POST", 1);
+        testHttpClient(apacheHttp, 100000, "http://localhost:8080/Server_war/json_test", "GET", 1);
         System.exit(0);
     }
 
     private static void testHttpClient(IHttpClient client, int requestsCount,
                                        String url, String method, int retryCount) throws Exception {
         if (method.equals("POST")) {
+            client.makePostRequest(1, url); //прогревочный запуск
             for (int i = 0; i < retryCount; i++) {
-                client.makePostRequest(1, url); //прогревочный запуск
+
                 StopWatch watch = new StopWatch();
                 watch.start();
                 client.makePostRequest(requestsCount, url);
@@ -28,9 +31,9 @@ public class Runner {
                 System.out.println(watch.toString() + " " + client.getClass().getName());
             }
         } else {
-
+            client.makeGetRequest(1, url); //прогревочный запуск
             for (int i = 0; i < retryCount; i++) {
-                client.makeGetRequest(10, url); //прогревочный запуск
+
                 StopWatch watch = new StopWatch();
                 watch.start();
                 client.makeGetRequest(requestsCount, url);

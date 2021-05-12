@@ -23,7 +23,7 @@ public class AsyncHttpClientExample implements IHttpClient {
     }
 
     public void makeGetRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {
-        AsyncHttpClient client = Dsl.asyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setKeepAlive(true).build());
+        AsyncHttpClient client = Dsl.asyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setMaxConnectionsPerHost(0).build());
         Request request = new RequestBuilder(HttpConstants.Methods.GET)
                 .setUrl(url)
                 .build();
@@ -39,10 +39,12 @@ public class AsyncHttpClientExample implements IHttpClient {
             });
             responses.add(f);
         }
-
+        int c = 0;
         for (Future<Response> resp: responses) {
             resp.get();
+            c++;
         }
+        System.out.println(c);
     }
 
     public void makePostRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {

@@ -33,11 +33,13 @@
             <artifactId>jetty-client</artifactId>
             <version>11.0.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.asynchttpclient/async-http-client -->
         <dependency>
             <groupId>org.asynchttpclient</groupId>
             <artifactId>async-http-client</artifactId>
-            <version>2.2.0</version>
+            <version>2.12.1</version>
         </dependency>
+
 
 
     </dependencies>
