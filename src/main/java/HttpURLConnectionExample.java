@@ -20,14 +20,20 @@ public class HttpURLConnectionExample implements IHttpClient {
     }
 
     public void makeGetRequest(int requestsCount, String url) throws IOException {
+        URL myUrl = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
         for (int i = 0; i < requestsCount; i++) {
-            URL myUrl = new URL(url);
-            HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null)
+                System.out.println(1);
+            System.out.println(connection.getResponseMessage());
             if (connection.getResponseCode() != 200) {
                 throw new RuntimeException();
             }
-            connection.disconnect();
+
         }
+        connection.disconnect();
     }
 
     public void makePostRequest(int requestsCount, String url) throws IOException {
