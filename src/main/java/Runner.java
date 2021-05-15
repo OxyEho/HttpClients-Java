@@ -16,12 +16,12 @@ public class Runner {
 //        testHttpClient(httpClient11, 100000, "http://localhost:8080/Server_war/json_test", "POST", 1);
 //        testHttpClient(apacheHttp, 100000, "http://localhost:8080/Server_war/json_test", "POST", 10);
 //        System.out.println();
-//        testHttpClient(okHttp, 100000, "http://localhost:8080/Server_war/json_test", "GET", 10);
-//        System.out.println();
+        testHttpClient(okHttp, 100000, "http://localhost:8080/Server_war/json_test", "GET", 10);
+        System.out.println();
 //        testHttpClient(httpClient11, 100000, "http://localhost:8080/Server_war/json_test", "POST", 10);
 //        System.out.println();
-//        testHttpClient(httpConnection, 1000, "http://localhost:8080/Server_war/json_test", "POST", 5);
-        testHttpClient(asyncClient, 100000, "http://localhost:8080/Server_war/json_test", "GET", 5);
+        testHttpClient(httpConnection, 100000, "http://localhost:8080/Server_war/json_test", "GET", 5);
+//        testHttpClient(asyncClient, 100000, "http://localhost:8080/Server_war/json_test", "GET", 5);
 //        System.out.println();
 //        testHttpClient(jettyClient, 100000, "http://localhost:8080/Server_war/json_test", "POST", 5);
         System.exit(0);

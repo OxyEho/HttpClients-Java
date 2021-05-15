@@ -20,24 +20,24 @@ public class HttpURLConnectionExample implements IHttpClient {
     }
 
     public void makeGetRequest(int requestsCount, String url) throws IOException {
-        HttpURLConnection connection = null;
-        URL myUrl = new URL(url);
-
+        StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < requestsCount; i++) {
-            connection = (HttpURLConnection) myUrl.openConnection();
+            URL myUrl = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
             connection.setDoInput(true);
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
-            StringBuilder stringBuilder = new StringBuilder();
-            while ((line = reader.readLine()) != null)
+            stringBuilder = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
-            System.out.println(stringBuilder.toString());
+            }
+//            System.out.println(stringBuilder.toString());
             if (connection.getResponseCode() != 200) {
                 throw new RuntimeException();
             }
             reader.close();
+            connection.disconnect();
         }
-        connection.disconnect();
     }
 
     public void makePostRequest(int requestsCount, String url) throws IOException {
@@ -48,8 +48,17 @@ public class HttpURLConnectionExample implements IHttpClient {
             connection.setRequestProperty("Content-Type", "application/json; utf-8");
             connection.setRequestProperty("Accept", "application/json");
             connection.setDoOutput(true);
+            connection.setDoInput(true);
             try(BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()))) {
                 wr.write(data.toString());
+            }
+
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                String line;
+                StringBuilder stringBuilder = new StringBuilder();
+                while ((line = reader.readLine()) != null) {
+                    stringBuilder.append(line);
+                }
             }
             if (connection.getResponseCode() != 200) {
                 throw new RuntimeException();
