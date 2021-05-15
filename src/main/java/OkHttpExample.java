@@ -9,16 +9,7 @@ import java.io.InputStreamReader;
 
 public class OkHttpExample implements IHttpClient {
 
-    private final JSONObject data = new JSONObject();
-
-    public OkHttpExample() {
-        try {
-            data.put("KEY1", "VALUE1");
-            data.put("KEY2", "VALUE2");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+    private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
 
     public void makeGetRequest(int requestsCount, String url) throws IOException {
         OkHttpClient client = new OkHttpClient();
@@ -38,6 +29,7 @@ public class OkHttpExample implements IHttpClient {
             while ((line = buf.readLine()) != null) {
                 line = "";
             }
+            buf.close();
             response.close();
         }
     }

@@ -17,19 +17,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JettyHttpClientExample implements IHttpClient {
-//    private static QueuedThreadPool threadPool = new QueuedThreadPool();
-    private static ExecutorService executorService = Executors.newFixedThreadPool(8 + 1);
-    private final JSONObject data;
 
-    public JettyHttpClientExample() {
-        data = new JSONObject();
-        try {
-            data.put("user", "VALUE1");
-            data.put("pass", "VALUE2");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+    private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(8 + 1);
 
     @Override
     public void makeGetRequest(int requestsCount, String url) throws Exception {

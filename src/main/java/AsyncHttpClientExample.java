@@ -10,20 +10,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class AsyncHttpClientExample implements IHttpClient {
-    private final JSONObject data;
 
-    public AsyncHttpClientExample() {
-        data = new JSONObject();
-        try {
-            data.put("user", "VALUE1");
-            data.put("pass", "VALUE2");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+
+    private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
 
     public void makeGetRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {
-        AsyncHttpClient client = Dsl.asyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setMaxConnectionsPerHost(0).build());
+        AsyncHttpClient client = Dsl.asyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().build());
         Request request = new RequestBuilder(HttpConstants.Methods.GET)
                 .setUrl(url)
                 .build();
@@ -39,12 +31,9 @@ public class AsyncHttpClientExample implements IHttpClient {
             });
             responses.add(f);
         }
-        int c = 0;
         for (Future<Response> resp: responses) {
             resp.get();
-            c++;
         }
-        System.out.println(c);
     }
 
     public void makePostRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {

@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 
 public class HttpURLConnectionExample implements IHttpClient {
 
-    private final JSONObject data = new JSONObject();
+    private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
 
     public HttpURLConnectionExample() {
         try {
@@ -20,18 +20,22 @@ public class HttpURLConnectionExample implements IHttpClient {
     }
 
     public void makeGetRequest(int requestsCount, String url) throws IOException {
+        HttpURLConnection connection = null;
         URL myUrl = new URL(url);
-        HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
+
         for (int i = 0; i < requestsCount; i++) {
+            connection = (HttpURLConnection) myUrl.openConnection();
+            connection.setDoInput(true);
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
+            StringBuilder stringBuilder = new StringBuilder();
             while ((line = reader.readLine()) != null)
-                System.out.println(1);
-            System.out.println(connection.getResponseMessage());
+                stringBuilder.append(line);
+            System.out.println(stringBuilder.toString());
             if (connection.getResponseCode() != 200) {
                 throw new RuntimeException();
             }
-
+            reader.close();
         }
         connection.disconnect();
     }

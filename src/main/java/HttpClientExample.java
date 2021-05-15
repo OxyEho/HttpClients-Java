@@ -11,7 +11,10 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.*;
 import java.nio.charset.StandardCharsets;
 
-public class HttpClientExample implements IHttpClient{
+public class HttpClientExample implements IHttpClient {
+
+    private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
+
     public void makeGetRequest(int requestsCount, String url) throws URISyntaxException, IOException, InterruptedException {
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
@@ -30,20 +33,12 @@ public class HttpClientExample implements IHttpClient{
     }
 
     public void makePostRequest(int requestsCount, String url) throws URISyntaxException, IOException, InterruptedException {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("user", "VALUE1");
-            jsonObject.put("pass", "VALUE2");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        long startTime = System.currentTimeMillis();
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
         HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(jsonObject.toString(), StandardCharsets.UTF_8))
+                .POST(HttpRequest.BodyPublishers.ofString(data.toString(), StandardCharsets.UTF_8))
                 .uri(new URI(url))
                 .header("Content-Type", "application/json")
                 .build();
