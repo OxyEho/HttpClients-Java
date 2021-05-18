@@ -4,7 +4,6 @@ import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -15,13 +14,11 @@ public class HttpClientExample implements IHttpClient {
 
     private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
 
-    public void makeGetRequest(int requestsCount, String url) throws URISyntaxException, IOException, InterruptedException {
+    public void makeGetRequest(int requestsCount, String url) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
-                .followRedirects(HttpClient.Redirect.NEVER)
                 .build();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(url))
+                .uri(URI.create(url))
                 .GET()
                 .build();
         for (int i = 0; i < requestsCount; i++) {
@@ -32,14 +29,12 @@ public class HttpClientExample implements IHttpClient {
         }
     }
 
-    public void makePostRequest(int requestsCount, String url) throws URISyntaxException, IOException, InterruptedException {
+    public void makePostRequest(int requestsCount, String url) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
-                .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(data.toString(), StandardCharsets.UTF_8))
-                .uri(new URI(url))
+                .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .build();
 
