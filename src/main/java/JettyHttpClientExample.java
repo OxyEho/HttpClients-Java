@@ -10,6 +10,8 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +36,11 @@ public class JettyHttpClientExample implements IHttpClient {
                         public void onComplete(Result result) {
                             latch.countDown();
                         }
+                        @Override
+                        public void onContent(Response response, ByteBuffer content) {
+                            String data = StandardCharsets.UTF_8.decode(content).toString();
+                        }
+
                         @Override
                         public void onFailure(Response response, Throwable failure) {
                             throw new RuntimeException();

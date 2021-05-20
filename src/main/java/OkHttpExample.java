@@ -25,9 +25,10 @@ public class OkHttpExample implements IHttpClient {
             }
 
             BufferedReader buf = new BufferedReader(new InputStreamReader(response.body().byteStream()));
+            StringBuilder builder = new StringBuilder();
             String line;
             while ((line = buf.readLine()) != null) {
-                line = "";
+                builder.append(line);
             }
             buf.close();
             response.close();
@@ -49,6 +50,14 @@ public class OkHttpExample implements IHttpClient {
             if (response.code() != 200) {
                 throw new RuntimeException();
             }
+
+            BufferedReader buf = new BufferedReader(new InputStreamReader(response.body().byteStream()));
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = buf.readLine()) != null) {
+                builder.append(line);
+            }
+            buf.close();
             response.close();
         }
     }

@@ -4,7 +4,9 @@ import org.asynchttpclient.util.HttpConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -14,7 +16,7 @@ public class AsyncHttpClientExample implements IHttpClient {
 
     private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
 
-    public void makeGetRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {
+    public void makeGetRequest(int requestsCount, String url) throws ExecutionException, InterruptedException, IOException {
         AsyncHttpClient client = Dsl.asyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().build());
         Request request = new RequestBuilder(HttpConstants.Methods.GET)
                 .setUrl(url)
@@ -32,11 +34,17 @@ public class AsyncHttpClientExample implements IHttpClient {
             responses.add(f);
         }
         for (Future<Response> resp: responses) {
-            resp.get();
+            Response response = resp.get();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getResponseBodyAsStream()));
+            String line;
+            StringBuilder builder = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
         }
     }
 
-    public void makePostRequest(int requestsCount, String url) throws ExecutionException, InterruptedException {
+    public void makePostRequest(int requestsCount, String url) throws ExecutionException, InterruptedException, IOException {
         AsyncHttpClient client = Dsl.asyncHttpClient();
         Request request = new RequestBuilder(HttpConstants.Methods.POST)
                 .setUrl(url)
@@ -56,7 +64,13 @@ public class AsyncHttpClientExample implements IHttpClient {
             responses.add(f);
         }
         for (Future<Response> resp: responses) {
-            resp.get();
+            Response response = resp.get();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getResponseBodyAsStream()));
+            String line;
+            StringBuilder builder = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
         }
     }
 }

@@ -34,21 +34,23 @@ public class ApacheHttpClientExample implements IHttpClient {
         }
     }
 
-    public void makeGetRequest(int requestsCount, String url) throws IOException {
-//        var httpClient = HttpClients.createMinimal();
-//        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-//        CloseableHttpClient httpClient = HttpClients.custom()
-//                .setConnectionManager(cm)
-//                .build();
+    public void makeGetRequest(int requestsCount, String url) throws IOException { ;
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpget = new HttpGet(url);
-//        HttpContext context = HttpClientContext.create();
         for (int i = 0; i < requestsCount; i++){
             CloseableHttpResponse httpResponse = httpClient.execute(httpget);
             if (httpResponse.getStatusLine().getStatusCode() != 200) {
                 throw new RuntimeException();
             }
+
             HttpEntity entity = httpResponse.getEntity();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+            reader.close();
             EntityUtils.consume(entity);
             httpResponse.close();
         }
@@ -68,6 +70,13 @@ public class ApacheHttpClientExample implements IHttpClient {
                 throw new RuntimeException();
             }
             HttpEntity entity = httpResponse.getEntity();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+            reader.close();
             EntityUtils.consume(entity);
             httpResponse.close();
         }

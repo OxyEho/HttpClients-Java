@@ -1,8 +1,7 @@
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -22,10 +21,19 @@ public class HttpClientExample implements IHttpClient {
                 .GET()
                 .build();
         for (int i = 0; i < requestsCount; i++) {
-            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            HttpResponse<InputStream> response = client.send(request, BodyHandlers.ofInputStream());
+
             if (response.statusCode() != 200) {
                 throw new RuntimeException();
             }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(response.body()));
+            String line;
+            StringBuilder builder = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+            reader.close();
         }
     }
 
@@ -39,10 +47,18 @@ public class HttpClientExample implements IHttpClient {
                 .build();
 
         for (int i = 0; i < requestsCount; i++) {
-            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            HttpResponse<InputStream> response = client.send(request, BodyHandlers.ofInputStream());
             if (response.statusCode() != 200) {
                 throw new RuntimeException();
             }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(response.body()));
+            String line;
+            StringBuilder builder = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+            reader.close();
         }
     }
 }
