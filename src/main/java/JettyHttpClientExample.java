@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class JettyHttpClientExample implements IHttpClient {
 
     private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(8 + 1);
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(9);
 
     @Override
     public void makeGetRequest(int requestsCount, String url) throws Exception {
@@ -65,6 +65,10 @@ public class JettyHttpClientExample implements IHttpClient {
                         @Override
                         public void onComplete(Result result) {
                             latch.countDown();
+                        }
+                        @Override
+                        public void onContent(Response response, ByteBuffer content) {
+                            String data = StandardCharsets.UTF_8.decode(content).toString();
                         }
                         @Override
                         public void onFailure(Response response, Throwable failure) {

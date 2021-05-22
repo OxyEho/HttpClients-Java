@@ -23,20 +23,20 @@ public class Runner {
 
         asyncClients.add(jettyClient);
         asyncClients.add(asyncClient);
-        testHttpClients(asyncClients, "GET", 100000, url);
-        testHttpClients(asyncClients, "POST", 100000, url);
+//        testHttpClients(asyncClients, "GET", 100000, url);
+//        testHttpClients(asyncClients, "POST", 100000, url);
 
-        testHttpClients(syncClients, "GET", 10000, url);
-        testHttpClients(syncClients, "POST", 10000, url);
-        testHttpClients(syncClients, "GET", 100000, url);
-        testHttpClients(syncClients, "POST", 100000, url);
+        testHttpClients(syncClients, "GET", 1000, url);
+        testHttpClients(syncClients, "POST", 1000, url);
+//        testHttpClients(syncClients, "GET", 100000, url);
+//        testHttpClients(syncClients, "POST", 100000, url);
         System.exit(0);
     }
 
     private static void testHttpClients(List<IHttpClient> clients, String method, int requestsCount, String url) throws Exception {
         System.out.println(method + " requests count: " + requestsCount);
         for (IHttpClient client: clients) {
-            long milliseconds = testHttpClient(client, requestsCount, url, method, 5);
+            long milliseconds = testHttpClient(client, requestsCount, url, method, 30);
             System.out.println(milliseconds + " : " + client.getClass().getName());
         }
     }
@@ -44,7 +44,7 @@ public class Runner {
     private static long testHttpClient(IHttpClient client, int requestsCount,
                                        String url, String method, int retryCount) throws Exception {
         if (method.equals("POST")) {
-            client.makePostRequest(1, url); //прогревочный запуск
+            client.makePostRequest(10, url); //прогревочный запуск
             long bestTime = 10000000;
             for (int i = 0; i < retryCount; i++) {
                 StopWatch watch = new StopWatch();
@@ -56,7 +56,7 @@ public class Runner {
             }
             return bestTime;
         } else {
-            client.makeGetRequest(1, url); //прогревочный запуск
+            client.makeGetRequest(10, url); //прогревочный запуск
             long bestTime = 10000000;
             for (int i = 0; i < retryCount; i++) {
                 StopWatch watch = new StopWatch();

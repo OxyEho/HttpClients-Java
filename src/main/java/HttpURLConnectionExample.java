@@ -6,26 +6,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class HttpURLConnectionExample implements IHttpClient {
-
     private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
-
     public void makeGetRequest(int requestsCount, String url) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < requestsCount; i++) {
             URL myUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
             connection.setDoInput(true);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-            stringBuilder = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-
-            if (connection.getResponseCode() != 200) {
-                throw new RuntimeException();
-            }
-            reader.close();
+            readInputData(connection);
             connection.disconnect();
         }
     }
@@ -42,18 +29,21 @@ public class HttpURLConnectionExample implements IHttpClient {
             try(BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()))) {
                 wr.write(data.toString());
             }
-
-            try(BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                String line;
-                StringBuilder stringBuilder = new StringBuilder();
-                while ((line = reader.readLine()) != null) {
-                    stringBuilder.append(line);
-                }
-            }
-            if (connection.getResponseCode() != 200) {
-                throw new RuntimeException();
-            }
+            readInputData(connection);
             connection.disconnect();
+        }
+    }
+
+    private void readInputData(HttpURLConnection connection) throws IOException{
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            String line;
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        }
+        if (connection.getResponseCode() != 200) {
+            throw new RuntimeException();
         }
     }
 }

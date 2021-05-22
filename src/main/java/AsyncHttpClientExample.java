@@ -13,7 +13,6 @@ import java.util.concurrent.Future;
 
 public class AsyncHttpClientExample implements IHttpClient {
 
-
     private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
 
     public void makeGetRequest(int requestsCount, String url) throws ExecutionException, InterruptedException, IOException {
@@ -23,9 +22,9 @@ public class AsyncHttpClientExample implements IHttpClient {
                 .build();
         ArrayList<Future<Response>> responses = new ArrayList<>();
         for (int i = 0; i < requestsCount; i++) {
-            Future<Response> f = client.executeRequest(request, new AsyncCompletionHandler<Response>() {
+            Future<Response> f = client.executeRequest(request, new AsyncCompletionHandler<>() {
                 @Override
-                public Response onCompleted(Response response) throws IOException {
+                public Response onCompleted(Response response){
                     if (response.getStatusCode() != 200)
                         throw new RuntimeException();
                     return response;
@@ -35,11 +34,12 @@ public class AsyncHttpClientExample implements IHttpClient {
         }
         for (Future<Response> resp: responses) {
             Response response = resp.get();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getResponseBodyAsStream()));
-            String line;
-            StringBuilder builder = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getResponseBodyAsStream()))) {
+                String line;
+                StringBuilder builder = new StringBuilder();
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
             }
         }
     }
@@ -53,9 +53,9 @@ public class AsyncHttpClientExample implements IHttpClient {
                 .build();
         ArrayList<Future<Response>> responses = new ArrayList<>();
         for (int i = 0; i < requestsCount; i++) {
-            Future<Response> f = client.executeRequest(request, new AsyncCompletionHandler<Response>() {
+            Future<Response> f = client.executeRequest(request, new AsyncCompletionHandler<>() {
                 @Override
-                public Response onCompleted(Response response) throws IOException {
+                public Response onCompleted(Response response){
                     if (response.getStatusCode() != 200)
                         throw new RuntimeException();
                     return response;
@@ -65,11 +65,12 @@ public class AsyncHttpClientExample implements IHttpClient {
         }
         for (Future<Response> resp: responses) {
             Response response = resp.get();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getResponseBodyAsStream()));
-            String line;
-            StringBuilder builder = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getResponseBodyAsStream()))) {
+                String line;
+                StringBuilder builder = new StringBuilder();
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
             }
         }
     }

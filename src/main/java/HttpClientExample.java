@@ -1,4 +1,3 @@
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -10,9 +9,7 @@ import java.net.http.HttpResponse.*;
 import java.nio.charset.StandardCharsets;
 
 public class HttpClientExample implements IHttpClient {
-
     private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
-
     public void makeGetRequest(int requestsCount, String url) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newBuilder()
                 .build();
@@ -22,18 +19,7 @@ public class HttpClientExample implements IHttpClient {
                 .build();
         for (int i = 0; i < requestsCount; i++) {
             HttpResponse<InputStream> response = client.send(request, BodyHandlers.ofInputStream());
-
-            if (response.statusCode() != 200) {
-                throw new RuntimeException();
-            }
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(response.body()));
-            String line;
-            StringBuilder builder = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
-            }
-            reader.close();
+            readInputData(response);
         }
     }
 
@@ -48,17 +34,20 @@ public class HttpClientExample implements IHttpClient {
 
         for (int i = 0; i < requestsCount; i++) {
             HttpResponse<InputStream> response = client.send(request, BodyHandlers.ofInputStream());
-            if (response.statusCode() != 200) {
-                throw new RuntimeException();
-            }
+            readInputData(response);
+        }
+    }
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(response.body()));
+    private void readInputData(HttpResponse<InputStream> response) throws IOException {
+        if (response.statusCode() != 200) {
+            throw new RuntimeException();
+        }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.body()))) {
             String line;
             StringBuilder builder = new StringBuilder();
             while ((line = reader.readLine()) != null) {
                 builder.append(line);
             }
-            reader.close();
         }
     }
 }

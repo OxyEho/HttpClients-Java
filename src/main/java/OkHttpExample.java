@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class OkHttpExample implements IHttpClient {
-
     private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
-
     public void makeGetRequest(int requestsCount, String url) throws IOException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -20,18 +18,7 @@ public class OkHttpExample implements IHttpClient {
         Call call = client.newCall(request);
         for (int i = 0; i < requestsCount; i++) {
             Response response = call.clone().execute();
-            if (response.code() != 200) {
-                throw new RuntimeException();
-            }
-
-            BufferedReader buf = new BufferedReader(new InputStreamReader(response.body().byteStream()));
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while ((line = buf.readLine()) != null) {
-                builder.append(line);
-            }
-            buf.close();
-            response.close();
+            readInputData(response);
         }
     }
 
@@ -47,18 +34,21 @@ public class OkHttpExample implements IHttpClient {
         for (int i = 0; i < requestsCount; i++) {
             Call call = client.newCall(request);
             Response response = call.execute();
-            if (response.code() != 200) {
-                throw new RuntimeException();
-            }
+            readInputData(response);
+        }
+    }
 
-            BufferedReader buf = new BufferedReader(new InputStreamReader(response.body().byteStream()));
+    private void readInputData(Response response) throws IOException {
+        if (response.code() != 200) {
+            throw new RuntimeException();
+        }
+        try (BufferedReader buf = new BufferedReader(new InputStreamReader(response.body().byteStream()))) {
             StringBuilder builder = new StringBuilder();
             String line;
             while ((line = buf.readLine()) != null) {
                 builder.append(line);
             }
-            buf.close();
-            response.close();
         }
+        response.close();
     }
 }
