@@ -1,3 +1,5 @@
+package clients;
+
 import org.json.JSONObject;
 
 import java.io.*;
@@ -7,10 +9,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.*;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class HttpClientExample implements IHttpClient {
     private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
-    public void makeGetRequest(int requestsCount, String url) throws IOException, InterruptedException {
+    public boolean makeGetRequest(int requestsCount, String url) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newBuilder()
                 .build();
         HttpRequest request = HttpRequest.newBuilder()
@@ -21,9 +25,21 @@ public class HttpClientExample implements IHttpClient {
             HttpResponse<InputStream> response = client.send(request, BodyHandlers.ofInputStream());
             readInputData(response);
         }
+        return true;
     }
 
-    public void makePostRequest(int requestsCount, String url) throws IOException, InterruptedException {
+    public void a(String url) throws ExecutionException, InterruptedException {
+        HttpClient client = HttpClient.newBuilder()
+                .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+        CompletableFuture<HttpResponse<String>> future = client.sendAsync(request, BodyHandlers.ofString());
+        future.thenApply(HttpResponse::body).thenAccept(System.out::println).get();
+    }
+
+    public boolean makePostRequest(int requestsCount, String url) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newBuilder()
                 .build();
         HttpRequest request = HttpRequest.newBuilder()
@@ -36,6 +52,7 @@ public class HttpClientExample implements IHttpClient {
             HttpResponse<InputStream> response = client.send(request, BodyHandlers.ofInputStream());
             readInputData(response);
         }
+        return true;
     }
 
     private void readInputData(HttpResponse<InputStream> response) throws IOException {

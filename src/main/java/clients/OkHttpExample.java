@@ -1,15 +1,15 @@
+package clients;
+
 import okhttp3.*;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class OkHttpExample implements IHttpClient {
     private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
-    public void makeGetRequest(int requestsCount, String url) throws IOException {
+    public boolean makeGetRequest(int requestsCount, String url) throws IOException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
@@ -20,9 +20,10 @@ public class OkHttpExample implements IHttpClient {
             Response response = call.clone().execute();
             readInputData(response);
         }
+        return true;
     }
 
-    public void makePostRequest(int requestsCount, String url) throws IOException {
+    public boolean makePostRequest(int requestsCount, String url) throws IOException {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(data.toString(), JSON);
         OkHttpClient client = new OkHttpClient();
@@ -30,17 +31,21 @@ public class OkHttpExample implements IHttpClient {
                 .url(url)
                 .post(body)
                 .build();
-
+        boolean res = true;
         for (int i = 0; i < requestsCount; i++) {
             Call call = client.newCall(request);
             Response response = call.execute();
-            readInputData(response);
+            res = readInputData(response);
+            if (!res) {
+                return res;
+            }
         }
+        return res;
     }
 
-    private void readInputData(Response response) throws IOException {
+    private boolean readInputData(Response response) throws IOException {
         if (response.code() != 200) {
-            throw new RuntimeException();
+            return false;
         }
         try (BufferedReader buf = new BufferedReader(new InputStreamReader(response.body().byteStream()))) {
             StringBuilder builder = new StringBuilder();
@@ -50,5 +55,6 @@ public class OkHttpExample implements IHttpClient {
             }
         }
         response.close();
+        return true;
     }
 }

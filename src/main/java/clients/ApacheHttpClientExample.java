@@ -1,3 +1,5 @@
+package clients;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -15,7 +17,8 @@ import java.io.InputStreamReader;
 
 public class ApacheHttpClientExample implements IHttpClient {
     private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
-    public void makeGetRequest(int requestsCount, String url) throws IOException { ;
+    public boolean makeGetRequest(int requestsCount, String url) throws IOException {
+        System.out.println("Invoked");
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpget = new HttpGet(url);
         for (int i = 0; i < requestsCount; i++){
@@ -24,9 +27,10 @@ public class ApacheHttpClientExample implements IHttpClient {
             }
         }
         httpClient.close();
+        return true;
     }
 
-    public void makePostRequest(int requestsCount, String url) throws IOException {
+    public boolean makePostRequest(int requestsCount, String url) throws IOException {
         StringEntity requestEntity = new StringEntity(
                 data.toString(),
                 ContentType.APPLICATION_JSON);
@@ -39,6 +43,7 @@ public class ApacheHttpClientExample implements IHttpClient {
             }
         }
         httpclient.close();
+        return true;
     }
 
     private void readInputData(CloseableHttpResponse httpResponse) throws IOException {
@@ -54,5 +59,6 @@ public class ApacheHttpClientExample implements IHttpClient {
             }
         }
         EntityUtils.consume(entity);
+
     }
 }

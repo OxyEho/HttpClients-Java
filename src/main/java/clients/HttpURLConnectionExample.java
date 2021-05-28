@@ -1,4 +1,5 @@
-import org.json.JSONException;
+package clients;
+
 import org.json.JSONObject;
 
 import java.io.*;
@@ -7,7 +8,7 @@ import java.net.URL;
 
 public class HttpURLConnectionExample implements IHttpClient {
     private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
-    public void makeGetRequest(int requestsCount, String url) throws IOException {
+    public boolean makeGetRequest(int requestsCount, String url) throws IOException {
         for (int i = 0; i < requestsCount; i++) {
             URL myUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
@@ -15,9 +16,10 @@ public class HttpURLConnectionExample implements IHttpClient {
             readInputData(connection);
             connection.disconnect();
         }
+        return true;
     }
 
-    public void makePostRequest(int requestsCount, String url) throws IOException {
+    public boolean makePostRequest(int requestsCount, String url) throws IOException {
         for (int i = 0; i < requestsCount; i++) {
             URL myUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
@@ -32,6 +34,7 @@ public class HttpURLConnectionExample implements IHttpClient {
             readInputData(connection);
             connection.disconnect();
         }
+        return true;
     }
 
     private void readInputData(HttpURLConnection connection) throws IOException{
@@ -41,6 +44,7 @@ public class HttpURLConnectionExample implements IHttpClient {
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
             }
+            System.out.println(stringBuilder.toString());
         }
         if (connection.getResponseCode() != 200) {
             throw new RuntimeException();
