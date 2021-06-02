@@ -1,40 +1,30 @@
 package clients;
 
-import org.json.JSONObject;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class HttpURLConnectionExample implements IHttpClient {
-    private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
-    public boolean makeGetRequest(int requestsCount, String url) throws IOException {
+    public void makeGet(int requestsCount, String url) throws IOException {
         for (int i = 0; i < requestsCount; i++) {
             URL myUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
-            connection.setDoInput(true);
             readInputData(connection);
-            connection.disconnect();
         }
-        return true;
     }
 
-    public boolean makePostRequest(int requestsCount, String url) throws IOException {
+    public void makePost(int requestsCount, String url , byte[] data) throws IOException {
         for (int i = 0; i < requestsCount; i++) {
             URL myUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json; utf-8");
             connection.setRequestProperty("Accept", "application/json");
             connection.setDoOutput(true);
-            connection.setDoInput(true);
-            try(BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()))) {
-                wr.write(data.toString());
+            try(OutputStream wr = connection.getOutputStream()) {
+                wr.write(data);
             }
             readInputData(connection);
-            connection.disconnect();
         }
-        return true;
     }
 
     private void readInputData(HttpURLConnection connection) throws IOException{
@@ -44,7 +34,6 @@ public class HttpURLConnectionExample implements IHttpClient {
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
             }
-            System.out.println(stringBuilder.toString());
         }
         if (connection.getResponseCode() != 200) {
             throw new RuntimeException();

@@ -1,9 +1,11 @@
 package clients;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 public interface IHttpClient {
-    boolean makeGetRequest(int requestsCount, String url) throws Exception;
-    boolean makePostRequest(int requestsCount, String url) throws Exception;
+    void makeGet(int requestsCount, String url) throws Exception;
+    void makePost(int requestsCount, String url, byte[] data) throws Exception;
 }

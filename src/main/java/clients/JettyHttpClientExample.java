@@ -1,24 +1,20 @@
 package clients;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringRequestContent;
-import org.json.JSONObject;
+import org.eclipse.jetty.client.util.BytesRequestContent;;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-public class JettyHttpClientExample implements IHttpClient {
-
-    private static final JSONObject data = new JSONObject().put("KEY1", "VALUE1").put("KEY2", "VALUE2");
-
+public class JettyHttpClientExample implements IAsyncHttpClient, IHttpClient {
     @Override
-    public boolean makeGetRequest(int requestsCount, String url) throws Exception {
+    public void makeAsyncGet(int requestsCount, String url) throws Exception {
         HttpClient client = new HttpClient();
         client.start();
         final CountDownLatch latch = new CountDownLatch(requestsCount);
@@ -33,7 +29,6 @@ public class JettyHttpClientExample implements IHttpClient {
                         public void onContent(Response response, ByteBuffer content) {
                             String data = StandardCharsets.UTF_8.decode(content).toString();
                         }
-
                         @Override
                         public void onFailure(Response response, Throwable failure) {
                             throw new RuntimeException();
@@ -42,19 +37,16 @@ public class JettyHttpClientExample implements IHttpClient {
 
         latch.await();
         client.stop();
-        return true;
     }
-
     @Override
-    public boolean makePostRequest(int requestsCount, String url) throws Exception {
+    public void makeAsyncPost(int requestsCount, String url, byte[] data) throws Exception {
         HttpClient client = new HttpClient();
         client.start();
         final CountDownLatch latch = new CountDownLatch(requestsCount);
         for (int i = 0; i < requestsCount; i++)
             client.POST(url)
-                    .body(new StringRequestContent("application/json", data.toString()))
+                    .body(new BytesRequestContent(data))
                     .send(new BufferingResponseListener() {
-
                         @Override
                         public void onComplete(Result result) {
                             latch.countDown();
@@ -71,6 +63,29 @@ public class JettyHttpClientExample implements IHttpClient {
 
         latch.await();
         client.stop();
-        return true;
+    }
+    @Override
+    public void makeGet(int requestsCount, String url) throws Exception {
+        HttpClient client = new HttpClient();
+        client.start();
+        for (int i = 0; i < requestsCount; i++) {
+            ContentResponse contentResponse = client.GET(url);
+            if (contentResponse.getStatus() != 200) { throw new RuntimeException(); }
+            String strResponse = contentResponse.getContentAsString();
+        }
+        client.stop();
+    }
+    @Override
+    public void makePost(int requestsCount, String url, byte[] data) throws Exception {
+        HttpClient client = new HttpClient();
+        client.start();
+        for (int i = 0; i < requestsCount; i++) {
+            Request request = client.POST(url);
+            request.body(new BytesRequestContent(data));
+            ContentResponse contentResponse = request.send();
+            if (contentResponse.getStatus() != 200) { throw new RuntimeException(); }
+            String strResponse = contentResponse.getContentAsString();
+        }
+        client.stop();
     }
 }
