@@ -3,141 +3,100 @@ package bechmark;
 import clients.*;
 import org.openjdk.jmh.annotations.*;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 @Threads(value = 1)
-@Measurement(iterations = 10)
+@Measurement(iterations = 1000)
 @Fork(value = 1, warmups = 1)
 @BenchmarkMode(Mode.SingleShotTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 10)
+@Warmup(iterations = 100)
 public class BenchmarkClients {
 
     @State(Scope.Thread)
     public static class TestState {
-        public byte[] data = new byte[10000];
-        public String url;
+        public byte[] data = new byte[1000000];
         public int requestsCount;
+        public IHttpClient apacheClient;
+        public IHttpClient http11Client;
+        public IHttpClient httpURLConnection;
+        public IHttpClient okHttpClient;
+        public IHttpClient jettyHttpClient;
 
         @Setup
-        public void setupJson() {
-            for (int i = 0; i < data.length; i++) {
-                data[i] = 1;
-            }
+        public void setClients() {
+            apacheClient = new ApacheHttpClientExample(data);
+            http11Client = new HttpClientExample(data);
+            httpURLConnection = new HttpURLConnectionExample(data);
+            okHttpClient = new OkHttpExample(data);
+            jettyHttpClient = new JettyHttpClientExample(data);
         }
 
         @Setup
-        public void setUrl() { url = "http://localhost:8080/Server_war/json_test"; }
+        public void setupData() {
+            Arrays.fill(data, (byte) 1);
+        }
 
         @Setup
-        public void setRequestsCount() { requestsCount = 1; }
+        public void setRequestsCount() {
+            requestsCount = 1;
+        }
+
+        @TearDown
+        public void stopClients() throws Exception {
+            jettyHttpClient.stop();
+            apacheClient.stop();
+        }
     }
 
     @Benchmark
     public void apacheBenchmarkGet(TestState state) throws Exception {
-        IHttpClient client = new ApacheHttpClientExample();
-        client.makeGet(state.requestsCount, state.url);
+        state.apacheClient.makeGet();
     }
 
     @Benchmark
     public void okHttpBenchmarkGet(TestState state) throws Exception {
-        IHttpClient client = new OkHttpExample();
-        client.makeGet(state.requestsCount, state.url);
-    }
-
-    @Benchmark
-    public void okHttpBenchmarkGetAsync(TestState state) throws Exception {
-        IAsyncHttpClient client = new OkHttpExample();
-        client.makeAsyncGet(state.requestsCount, state.url);
+        state.okHttpClient.makeGet();
     }
 
     @Benchmark
     public void http11BenchmarkGet(TestState state) throws Exception {
-        IHttpClient client = new HttpClientExample();
-        client.makeGet(state.requestsCount, state.url);
-    }
-
-    @Benchmark
-    public void asyncHttp11BenchmarkGet(TestState state) throws Exception {
-        IAsyncHttpClient client = new HttpClientExample();
-        client.makeAsyncGet(state.requestsCount, state.url);
+        state.http11Client.makeGet();
     }
 
     @Benchmark
     public void httpURLConnectionBenchmarkGet(TestState state) throws Exception {
-        IHttpClient client = new HttpURLConnectionExample();
-        client.makeGet(state.requestsCount, state.url);
+        state.httpURLConnection.makeGet();
     }
 
     @Benchmark
     public void jettyHttpBenchmarkGet(TestState state) throws Exception {
-        IHttpClient client = new JettyHttpClientExample();
-        client.makeGet(state.requestsCount, state.url);
-    }
-
-    @Benchmark
-    public void jettyHttpBenchmarkGetAsync(TestState state) throws Exception {
-        IAsyncHttpClient client = new JettyHttpClientExample();
-        client.makeAsyncGet(state.requestsCount, state.url);
-    }
-
-    @Benchmark
-    public void asyncClientBenchmarkGet(TestState state) throws Exception {
-        IAsyncHttpClient client = new AsyncHttpClientExample();
-        client.makeAsyncGet(state.requestsCount, state.url);
+        state.jettyHttpClient.makeGet();
     }
 
     @Benchmark
     public void apacheBenchmarkPost(TestState state) throws Exception {
-        IHttpClient client = new ApacheHttpClientExample();
-        client.makePost(state.requestsCount, state.url ,state.data);
+        state.apacheClient.makePost();
     }
 
     @Benchmark
     public void okHttpBenchmarkPost(TestState state) throws Exception {
-        IHttpClient client = new OkHttpExample();
-        client.makePost(state.requestsCount, state.url, state.data);
-    }
-
-    @Benchmark
-    public void okHttpBenchmarkPostAsync(TestState state) throws Exception {
-        IAsyncHttpClient client = new OkHttpExample();
-        client.makeAsyncPost(state.requestsCount, state.url, state.data);
+        state.okHttpClient.makePost();
     }
 
     @Benchmark
     public void http11BenchmarkPost(TestState state) throws Exception {
-        IHttpClient client = new HttpClientExample();
-        client.makePost(state.requestsCount, state.url, state.data);
-    }
-
-    @Benchmark
-    public void asyncHttp11BenchmarkPost(TestState state) throws Exception {
-        IAsyncHttpClient client = new HttpClientExample();
-        client.makeAsyncPost(state.requestsCount, state.url, state.data);
+        state.http11Client.makePost();
     }
 
     @Benchmark
     public void httpURLConnectionBenchmarkPost(TestState state) throws Exception {
-        IHttpClient client = new HttpURLConnectionExample();
-        client.makePost(state.requestsCount, state.url, state.data);
+        state.httpURLConnection.makePost();
     }
 
     @Benchmark
     public void jettyHttpBenchmarkPost(TestState state) throws Exception {
-        IHttpClient client = new JettyHttpClientExample();
-        client.makePost(state.requestsCount, state.url, state.data);
-    }
-
-    @Benchmark
-    public void jettyHttpBenchmarkPostAsync(TestState state) throws Exception {
-        IAsyncHttpClient client = new JettyHttpClientExample();
-        client.makeAsyncPost(state.requestsCount, state.url, state.data);
-    }
-
-    @Benchmark
-    public void asyncClientBenchmarkPost(TestState state) throws Exception {
-        IAsyncHttpClient client = new AsyncHttpClientExample();
-        client.makeAsyncPost(state.requestsCount, state.url, state.data);
+        state.jettyHttpClient.makePost();
     }
 }

@@ -3,6 +3,7 @@ package clients;
 import org.json.JSONObject;
 
 public interface IAsyncHttpClient {
-    void makeAsyncGet(int requestsCount, String url) throws Exception;
-    void makeAsyncPost(int requestsCount, String url, byte[] data) throws Exception;
+    void makeAsyncGet(int requestsCount) throws Exception;
+    void makeAsyncPost(int requestsCount) throws Exception;
+    default void stopAsync() throws Exception {}
 }

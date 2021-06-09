@@ -8,44 +8,41 @@ import java.io.InputStreamReader;
 import java.util.concurrent.CountDownLatch;
 
 public class OkHttpExample implements IHttpClient, IAsyncHttpClient {
-    @Override
-    public void makeGet(int requestsCount, String url) throws IOException {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(url)
-                .get()
-                .build();
+    private static final String url = "http://localhost:8080/Server_war/json_test";
+    private static final OkHttpClient client = new OkHttpClient();
+    private static final Request getRequest = new Request.Builder()
+            .url(url)
+            .get()
+            .build();
+    private final Request postRequest;
 
-        for (int i = 0; i < requestsCount; i++) {
-            Call call = client.newCall(request);
-            Response response = call.execute();
-            readInputData(response);
-        }
-    }
-    @Override
-    public void makePost(int requestsCount, String url , byte[] data) throws IOException {
+    public OkHttpExample(byte[] data) {
         RequestBody body = RequestBody.create(data);
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
+        postRequest = new Request.Builder()
                 .url(url)
                 .post(body)
                 .build();
-        for (int i = 0; i < requestsCount; i++) {
-            Call call = client.newCall(request);
-            Response response = call.execute();
-            readInputData(response);
-        }
+    }
+
+    @Override
+    public void makeGet() throws IOException {
+        Call call = client.newCall(getRequest);
+        Response response = call.execute();
+        readInputData(response);
+
     }
     @Override
-    public void makeAsyncGet(int requestsCount, String url) throws Exception {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(url)
-                .get()
-                .build();
+    public void makePost() throws IOException {
+        Call call = client.newCall(postRequest);
+        Response response = call.execute();
+        readInputData(response);
+    }
+
+    @Override
+    public void makeAsyncGet(int requestsCount) throws Exception {
         final CountDownLatch latch = new CountDownLatch(requestsCount);
         for (int i = 0; i < requestsCount; i++) {
-            client.newCall(request).enqueue(new Callback() {
+            client.newCall(getRequest).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     throw new RuntimeException(e);
@@ -59,18 +56,12 @@ public class OkHttpExample implements IHttpClient, IAsyncHttpClient {
             });
         }
         latch.await();
-        client.dispatcher().executorService().shutdown();
     }
     @Override
-    public void makeAsyncPost(int requestsCount, String url, byte[] data) throws Exception {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(url)
-                .post(RequestBody.create(data))
-                .build();
+    public void makeAsyncPost(int requestsCount) throws Exception {
         final CountDownLatch latch = new CountDownLatch(requestsCount);
         for (int i = 0; i < requestsCount; i++) {
-            client.newCall(request).enqueue(new Callback() {
+            client.newCall(postRequest).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     throw new RuntimeException(e);
@@ -84,8 +75,11 @@ public class OkHttpExample implements IHttpClient, IAsyncHttpClient {
             });
         }
         latch.await();
-        client.dispatcher().executorService().shutdown();
     }
+
+    @Override
+    public void stopAsync() throws Exception { client.dispatcher().executorService().shutdown(); }
+
     private void readInputData(Response response) throws IOException {
         if (!response.isSuccessful()) {
             throw new RuntimeException();

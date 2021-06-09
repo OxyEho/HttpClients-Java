@@ -5,26 +5,26 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class HttpURLConnectionExample implements IHttpClient {
-    public void makeGet(int requestsCount, String url) throws IOException {
-        for (int i = 0; i < requestsCount; i++) {
-            URL myUrl = new URL(url);
-            HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
-            readInputData(connection);
-        }
+    private static final String url = "http://localhost:8080/Server_war/json_test";
+    private final byte[] data;
+    public HttpURLConnectionExample(byte[] data) {
+        this.data = data;
     }
-
-    public void makePost(int requestsCount, String url , byte[] data) throws IOException {
-        for (int i = 0; i < requestsCount; i++) {
-            URL myUrl = new URL(url);
-            HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setDoOutput(true);
-            try(OutputStream wr = connection.getOutputStream()) {
-                wr.write(data);
-            }
-            readInputData(connection);
+    @Override
+    public void makeGet() throws IOException {
+        URL myUrl = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
+        readInputData(connection);
+    }
+    @Override
+    public void makePost() throws IOException {
+        URL myUrl = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
+        connection.setDoOutput(true);
+        try(OutputStream wr = connection.getOutputStream()) {
+            wr.write(data);
         }
+        readInputData(connection);
     }
 
     private void readInputData(HttpURLConnection connection) throws IOException{
