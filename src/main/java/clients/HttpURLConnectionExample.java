@@ -14,15 +14,20 @@ public class HttpURLConnectionExample implements IHttpClient {
     public void makeGet() throws IOException {
         URL myUrl = new URL(url);
         HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setUseCaches(false);
         readInputData(connection);
     }
     @Override
     public void makePost() throws IOException {
         URL myUrl = new URL(url);
         HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setUseCaches(false);
         connection.setDoOutput(true);
         try(OutputStream wr = connection.getOutputStream()) {
             wr.write(data);
+            wr.flush();
         }
         readInputData(connection);
     }

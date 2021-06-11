@@ -11,12 +11,12 @@ import java.util.concurrent.TimeUnit;
 @Fork(value = 1, warmups = 1)
 @BenchmarkMode(Mode.SingleShotTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 100)
+@Warmup(iterations = 1000)
 public class BenchmarkClients {
 
     @State(Scope.Thread)
     public static class TestState {
-        public byte[] data = new byte[1000000];
+        public byte[] data = new byte[1];
         public int requestsCount;
         public IHttpClient apacheClient;
         public IHttpClient http11Client;
