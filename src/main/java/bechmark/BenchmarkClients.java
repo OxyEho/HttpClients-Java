@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 @Fork(value = 1, warmups = 1)
 @BenchmarkMode(Mode.SingleShotTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 1000)
+@Warmup(iterations = 100)
 public class BenchmarkClients {
 
     @State(Scope.Thread)
