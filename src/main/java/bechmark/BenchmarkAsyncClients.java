@@ -16,7 +16,7 @@ public class BenchmarkAsyncClients {
 
     @State(Scope.Thread)
     public static class TestState {
-        public byte[] data = new byte[1000000];
+        public byte[] data = new byte[10000];
         public int requestsCount;
         public IAsyncHttpClient okHttpClient;
         public IAsyncHttpClient http11Client;
@@ -37,7 +37,7 @@ public class BenchmarkAsyncClients {
         }
 
         @Setup
-        public void setRequestsCount() { requestsCount = 1; }
+        public void setRequestsCount() { requestsCount = 100; }
 
         @TearDown
         public void stopClients() throws Exception {
@@ -47,43 +47,43 @@ public class BenchmarkAsyncClients {
         }
     }
 
-    @Benchmark
-    public void okHttpBenchmarkAsyncGet(TestState state) throws Exception {
-        state.okHttpClient.makeAsyncGet(state.requestsCount);
-    }
-
-    @Benchmark
-    public void asyncHttp11BenchmarkGet(TestState state) throws Exception {
-        state.http11Client.makeAsyncGet(state.requestsCount);
-    }
-
+//    @Benchmark
+//    public void okHttpBenchmarkAsyncGet(TestState state) throws Exception {
+//        state.okHttpClient.makeAsyncGet(state.requestsCount);
+//    }
+//
+//    @Benchmark
+//    public void asyncHttp11BenchmarkGet(TestState state) throws Exception {
+//        state.http11Client.makeAsyncGet(state.requestsCount);
+//    }
+//
     @Benchmark
     public void jettyHttpBenchmarkAsyncGet(TestState state) throws Exception {
         state.jettyHttpClient.makeAsyncGet(state.requestsCount);
     }
-
-    @Benchmark
-    public void asyncClientBenchmarkGet(TestState state) throws Exception {
-        state.asyncHttpClient.makeAsyncGet(state.requestsCount);
-    }
-
-    @Benchmark
-    public void okHttpBenchmarkAsyncPost(TestState state) throws Exception {
-        state.okHttpClient.makeAsyncPost(state.requestsCount);
-    }
-
-    @Benchmark
-    public void asyncHttp11BenchmarkPost(TestState state) throws Exception {
-        state.http11Client.makeAsyncPost(state.requestsCount);
-    }
+//
+//    @Benchmark
+//    public void asyncClientBenchmarkGet(TestState state) throws Exception {
+//        state.asyncHttpClient.makeAsyncGet(state.requestsCount);
+//    }
+//
+//    @Benchmark
+//    public void okHttpBenchmarkAsyncPost(TestState state) throws Exception {
+//        state.okHttpClient.makeAsyncPost(state.requestsCount);
+//    }
+//
+//    @Benchmark
+//    public void asyncHttp11BenchmarkPost(TestState state) throws Exception {
+//        state.http11Client.makeAsyncPost(state.requestsCount);
+//    }
 
     @Benchmark
     public void jettyHttpBenchmarkAsyncPost(TestState state) throws Exception {
         state.jettyHttpClient.makeAsyncPost(state.requestsCount);
     }
 
-    @Benchmark
-    public void asyncClientBenchmarkPost(TestState state) throws Exception {
-        state.asyncHttpClient.makeAsyncPost(state.requestsCount);
-    }
+//    @Benchmark
+//    public void asyncClientBenchmarkPost(TestState state) throws Exception {
+//        state.asyncHttpClient.makeAsyncPost(state.requestsCount);
+//    }
 }

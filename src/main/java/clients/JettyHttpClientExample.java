@@ -6,7 +6,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.BytesRequestContent;;
+import org.eclipse.jetty.client.util.BytesRequestContent;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +28,7 @@ public class JettyHttpClientExample implements IAsyncHttpClient, IHttpClient {
     @Override
     public void makeAsyncGet(int requestsCount) throws Exception {
         final CountDownLatch latch = new CountDownLatch(requestsCount);
-        for (int i = 0; i < requestsCount; i++)
+        for (int i = 0; i < requestsCount; i++) {
             client.newRequest(url)
                     .send(new BufferingResponseListener() {
                         @Override
@@ -44,7 +44,7 @@ public class JettyHttpClientExample implements IAsyncHttpClient, IHttpClient {
                             throw new RuntimeException();
                         }
                     });
-
+        }
         latch.await();
     }
     @Override
@@ -66,7 +66,6 @@ public class JettyHttpClientExample implements IAsyncHttpClient, IHttpClient {
                 }
             });
         }
-
         latch.await();
     }
     @Override

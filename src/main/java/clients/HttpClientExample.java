@@ -1,4 +1,6 @@
 package clients;
+import okhttp3.ResponseBody;
+
 import java.io.*;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -35,20 +37,20 @@ public class HttpClientExample implements IHttpClient, IAsyncHttpClient {
 
     @Override
     public void makeGet() throws IOException, InterruptedException {
-        HttpResponse<byte[]> response = client.send(getRequest, BodyHandlers.ofByteArray());
+        HttpResponse<InputStream> response = client.send(getRequest, BodyHandlers.ofInputStream());
         readInputData(response);
     }
     @Override
     public void makePost() throws IOException, InterruptedException {
-        HttpResponse<byte[]> response = client.send(postRequest, BodyHandlers.ofByteArray());
+        HttpResponse<InputStream> response = client.send(postRequest, BodyHandlers.ofInputStream());
         readInputData(response);
     }
 
     @Override
     public void makeAsyncGet(int requestsCount) throws Exception {
-        List<CompletableFuture<HttpResponse<byte[]>>> futuresResponses = new ArrayList<>();
+        List<CompletableFuture<HttpResponse<InputStream>>> futuresResponses = new ArrayList<>();
         for (int i = 0; i < requestsCount; i++) {
-            CompletableFuture<HttpResponse<byte[]>> future = client.sendAsync(getRequest, BodyHandlers.ofByteArray());
+            CompletableFuture<HttpResponse<InputStream>> future = client.sendAsync(getRequest, BodyHandlers.ofInputStream());
             futuresResponses.add(future.thenApplyAsync((resp) -> {
                 if (resp.statusCode() != 200) throw new RuntimeException();
                 try {
@@ -59,16 +61,16 @@ public class HttpClientExample implements IHttpClient, IAsyncHttpClient {
                 return resp;
             }));
         }
-        for (CompletableFuture<HttpResponse<byte[]>> futureResponse: futuresResponses) {
+        for (CompletableFuture<HttpResponse<InputStream>> futureResponse: futuresResponses) {
             futureResponse.get();
         }
     }
 
     @Override
     public void makeAsyncPost(int requestsCount) throws Exception {
-        List<CompletableFuture<HttpResponse<byte[]>>> futuresResponses = new ArrayList<>();
+        List<CompletableFuture<HttpResponse<InputStream>>> futuresResponses = new ArrayList<>();
         for (int i = 0; i < requestsCount; i++) {
-            CompletableFuture<HttpResponse<byte[]>> future = client.sendAsync(postRequest, BodyHandlers.ofByteArray());
+            CompletableFuture<HttpResponse<InputStream>> future = client.sendAsync(postRequest, BodyHandlers.ofInputStream());
             futuresResponses.add(future.thenApplyAsync((resp) -> {
                 if (resp.statusCode() != 200) throw new RuntimeException();
                 try {
@@ -79,13 +81,19 @@ public class HttpClientExample implements IHttpClient, IAsyncHttpClient {
                 return resp;
             }));
         }
-        for (CompletableFuture<HttpResponse<byte[]>> futureResponse: futuresResponses) {
+        for (CompletableFuture<HttpResponse<InputStream>> futureResponse: futuresResponses) {
             futureResponse.get();
         }
     }
 
-    private void readInputData(HttpResponse<byte[]> response) throws IOException {
+    private void readInputData(HttpResponse<InputStream> response) throws IOException {
         if (response.statusCode() != 200) { throw new RuntimeException(); }
-        String body = new String(response.body(), StandardCharsets.UTF_8);
+        try (BufferedReader buf = new BufferedReader(new InputStreamReader(response.body()))) {
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = buf.readLine()) != null) {
+                builder.append(line);
+            }
+        }
     }
 }
